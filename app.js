@@ -212,10 +212,10 @@ app.get('/logout', (req, res) => {
 
 app.get('/product/:id', checkAuthenticated, (req, res) => {
   // Extract the product ID from the request parameters
-  const productId = req.params.id;
+  const candyId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+  connection.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
       if (error) throw error;
 
       // Check if any product with the given ID was found

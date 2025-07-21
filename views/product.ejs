@@ -34,28 +34,79 @@
         </div>
     </nav>
 
-    <div class="container">
-        <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
-        <br>
-        <div class="text-center"><h2>Candy Details</h2></div>
-        <br>
-        <% if (candy) { %> <!-- Check if candy data exists -->
-            <div>
-                <p><br> <img src = "../images/<%= candy.image %>" width="20%"></p>
-                <p><b>Candy Name:</b><br> <%= candy.candyName %></p>
-                <p><b>Description:</b><br> <%= candy.description %></p>
-                <p><b>Candy Quantity:</b><br> <%= candy.quantity %></p>
-                <p><b>Price:</b><br> $<%= candy.price.toFixed(2) %></p> 
-            </div>
-        <% } else { %>
-            <p>No candy found.</p>
-        <% } %>
-        <% if (user.role === "admin") { %>
-          <a href ="/inventory">Back</a>
-        <% } else { %>
-          <a href ="/shopping">Back</a>
-        <% } %>
+    <div class="container mt-4">
+  <div class="user-info text-end mb-3">
+    <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
+  </div>
+
+  <div class="text-center mb-4">
+    <h2 class="fw-bold"><%= product.candyName %> Details</h2>
+  </div>
+
+  <% if (product) { %>
+    <div class="row align-items-center">
+      <div class="col-md-4 text-center mb-3">
+        <img src="../images/<%= product.image %>" alt="<%= product.candyName %>" class="img-fluid rounded shadow" style="max-height: 500px;">
+      </div>
+
+      
+      <div class="col-md-8">
+        <div class="mb-3">
+          <h4 class="text-muted">Candy Name:</h4>
+          <p class="fs-5"><%= product.candyName %></p>
+        </div>
+
+        <div class="mb-3">
+          <h4 class="text-muted">Description:</h4>
+          <p><%= product.description %></p>
+        </div>
+
+        <div class="mb-3">
+          <h4 class="text-muted">Quantity Available:</h4>
+          <p><%= product.quantity %> Packs</p>
+        </div>
+
+        <div class="mb-3">
+          <h4 class="text-muted">Price:</h4>
+          <p class="fs-5 fw-bold text-success">$<%= product.price.toFixed(2) %></p>
+        </div>
+
+        
+        <div class="mb-3">
+          <h4 class="text-muted">Ingredients & Allergens:</h4>
+          <p><%= product.ingredients %> <br> <strong>Allergens:</strong> <%= product.allergens %></p>
+        </div>
+
+        
+        <div class="mb-3">
+          <h4 class="text-muted">Storage Instructions:</h4>
+          <p><%= product.storageInstructions %></p>
+        </div>
+
+        
+        <div class="mb-3">
+          <h4 class="text-muted">Made In:</h4>
+          <p><%= product.madeIn %></p>
+        </div>
+
+  
+      </div>
     </div>
+  <% } else { %>
+    <div class="alert alert-warning text-center mt-4">
+      <p>No candy found.</p>
+    </div>
+  <% } %>
+
+  <div class="mt-4">
+    <% if (user.role === "admin") { %>
+      <a href="/inventory" class="btn btn-secondary">Back to Inventory</a>
+    <% } else { %>
+      <a href="/shopping" class="btn btn-primary">Back to Shop</a>
+    <% } %>
+  </div>
+</div>
+
     
 </body>
 </html>
