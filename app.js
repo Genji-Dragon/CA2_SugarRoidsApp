@@ -82,7 +82,7 @@ app.get('/', checkAuth, (req, res) => {
   res.send(`<h1>Welcome, ${req.session.user.username} (${req.session.user.role})</h1><a href="/logout">Logout</a>`);
 });
 
-app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
     // Fetch data from MySQL
     connection.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
@@ -152,7 +152,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
-app.get('/shopping', checkAuthenticated, (req, res) => {
+app.get('/shopping', checkAuth, (req, res) => {
     // Fetch data from MySQL
     connection.query('SELECT * FROM products', (error, results) => {
         if (error) throw error;
@@ -160,7 +160,7 @@ app.get('/shopping', checkAuthenticated, (req, res) => {
       });
 });
 
-app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
+app.post('/add-to-cart/:id', checkAuth, (req, res) => {
     const productId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
@@ -196,12 +196,12 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-app.get('/cart', checkAuthenticated, (req, res) => {
+app.get('/cart', checkAuth, (req, res) => {
     const cart = req.session.cart || [];
     res.render('cart', { cart, user: req.session.user });
 });
 
-app.get('/product/:id', checkAuthenticated, (req, res) => {
+app.get('/product/:id', checkAuth, (req, res) => {
   // Extract the product ID from the request parameters
   const candyId = req.params.id;
 
@@ -221,7 +221,7 @@ app.get('/product/:id', checkAuthenticated, (req, res) => {
 });
 
 
-app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/addProduct', checkAuth, checkAdmin, (req, res) => {
     res.render('addProduct', {user: req.session.user } ); 
 });
 
@@ -250,27 +250,27 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 });
 
 
-app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const productId = req.params.id;
+app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
+    const candyId = req.params.id;
     const sql = 'SELECT * FROM products WHERE candyId = ?';
 
     // Fetch data from MySQL based on the product ID
-    connection.query(sql , [productId], (error, results) => {
+    connection.query(sql , [candyId], (error, results) => {
         if (error) throw error;
 
         // Check if any product with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the product data
-            res.render('updateProduct', { product: results[0] });
+            res.render('updateCandy', { product: results[0] });
         } else {
             // If no product with the given ID was found, render a 404 page or handle it accordingly
-            res.status(404).send('Product not found');
+            res.status(404).send('Candy not found');
         }
     });
 });
 
 app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id;
+    const candyId = req.params.id;
     // Extract product data from the request body
     const { name, quantity, price } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
@@ -280,11 +280,11 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
     // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+    connection.query(sql, [name, quantity, price, image, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error updating product:", error);
-            res.status(500).send('Error updating product');
+            console.error("Error updating candy:", error);
+            res.status(500).send('Error updating candy');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -293,13 +293,13 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 });
 
 app.get('/deleteProduct/:id', (req, res) => {
-    const productId = req.params.id;
+    const candyId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE productId = ?', [productId], (error, results) => {
+    connection.query('DELETE FROM products WHERE candytId = ?', [candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error deleting product:", error);
-            res.status(500).send('Error deleting product');
+            console.error("Error deleting candy:", error);
+            res.status(500).send('Error deleting candy');
         } else {
             // Send a success response
             res.redirect('/inventory');
