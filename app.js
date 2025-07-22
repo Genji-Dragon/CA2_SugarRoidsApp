@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const path = require('path');
 const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -107,27 +108,36 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  if (!email || !password) {
-    req.flash('error', 'Please enter both email and password');
-    return res.redirect('/login');
-  }
-
-  const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-  db.query(sql, [email, password], (err, results) => {
-    if (!err && results.length > 0) {
-      req.session.user = {
-        id: results[0].id,
-        username: results[0].username,
-        role: results[0].role
-      };
-      res.redirect('/');
-    } else {
-      req.flash('error', 'Invalid email or password');
-      res.redirect('/login');
+    if (!email || !password) {
+        req.flash('error', 'All fields are required.');
+        return res.redirect('/login');
     }
-  });
+
+    const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
+    connection.query(sql, [email, password], (err, results) => {
+        if (err) {
+            console.log('Login error:', err);
+            req.flash('error', 'Something went wrong.');
+            return res.redirect('/login');
+        }
+
+        if (results.length > 0) {
+            // Save user data in session
+            req.session.user = results[0];
+
+            // Redirect based on role
+            if (results[0].role === 'admin') {
+                return res.redirect('/inventory');  // Admin sees inventory
+            } else {
+                return res.redirect('/shopping');   // Normal user sees shopping
+            }
+        } else {
+            req.flash('error', 'Invalid email or password.');
+            return res.redirect('/login');
+        }
+    });
 });
 
 app.get('/logout', (req, res) => {
@@ -276,19 +286,45 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
     });
 });
 
-app.get('/deleteProduct/:id', (req, res) => {
-    const candyId = req.params.id;
+// DELETE PRODUCT (Admin Only)
+app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE candytId = ?', [candyId], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error deleting candy:", error);
-            res.status(500).send('Error deleting candy');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
+// Step 1: Fetch the product's image filename
+    const getImageQuery = 'SELECT image FROM products WHERE candyId = ?';
+    connection.query(getImageQuery, [candyId], (err, results) => {
+        if (err) {
+        console.error("Error fetching cabdy image:", err);
+            return res.status(500).send('Internal server error');
         }
+
+        if (results.length === 0) {
+            return res.status(404).send('Candy not found');
+        }
+
+        const imageFilename = results[0].image;
+        const imagePath = path.join(__dirname, 'public', 'images', imageFilename);
+
+// Step 2: Delete the product from the database
+    const deleteQuery = 'DELETE FROM products WHERE candyId = ?';
+    connection.query(deleteQuery, [candyId], (err, result) => {
+        if (err) {
+            console.error("Error deleting candy from DB:", err);
+            return res.status(500).send('Database delete error');
+        }
+
+// Step 3: Delete the image file (optional but recommended)
+        fs.unlink(imagePath, (err) => {
+            if (err) {
+                console.warn("Image file could not be deleted (might not exist):", imageFilename);
+            } else {
+                console.log("Deleted image file:", imageFilename);
+            }
+        });
+
+        res.redirect('/inventory');
     });
+});
+ 
 });
 
 app.listen(PORT, () => {
