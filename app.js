@@ -270,7 +270,7 @@ app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
         // Check if any product with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the product data
-            res.render('updateCandy', { product: results[0] });
+            res.render('updateCandy', { candy: results[0] });
         } else {
             // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Candy not found');
@@ -281,7 +281,7 @@ app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
 app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
     const candyId = req.params.id;
     // Extract product data from the request body
-    const { name, quantity, price } = req.body;
+    const { candyName, quantity, price } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
     if (req.file) { //if new image is uploaded
         image = req.file.filename; // set image to be new image filename
@@ -289,7 +289,7 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
     // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, candyId], (error, results) => {
+    connection.query(sql, [candyName, quantity, price, image, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating candy:", error);
