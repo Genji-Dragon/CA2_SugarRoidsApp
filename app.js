@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const path = require('path');
 const multer = require('multer');
-const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -289,44 +288,19 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 // DELETE PRODUCT (Admin Only)
 app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
 
-// Step 1: Fetch the product's image filename
-    const getImageQuery = 'SELECT image FROM products WHERE candyId = ?';
-    db.query(getImageQuery, [candyId], (err, results) => {
-        if (err) {
-        console.error("Error fetching cabdy image:", err);
-            return res.status(500).send('Internal server error');
-        }
-
-        if (results.length === 0) {
-            return res.status(404).send('Candy not found');
-        }
-
-        const imageFilename = results[0].image;
-        const imagePath = path.join(__dirname, 'public', 'images', imageFilename);
-
-// Step 2: Delete the product from the database
+// Step 1: Delete the product from the database
     const deleteQuery = 'DELETE FROM products WHERE candyId = ?';
     db.query(deleteQuery, [candyId], (err, result) => {
         if (err) {
             console.error("Error deleting candy from DB:", err);
-            return res.status(500).send('Database delete error');
+            req.flash('error', 'Error deleting candy from Database');
+            return res.status(500).redirect('/inventory');
         }
-
-// Step 3: Delete the image file (optional but recommended)
-        fs.unlink(imagePath, (err) => {
-            if (err) {
-                console.warn("Image file could not be deleted (might not exist):", imageFilename);
-            } else {
-                console.log("Deleted image file:", imageFilename);
-            }
-        });
-
+        req.flash('success', 'Candy deleted successfully (image file remains on server).');
         res.redirect('/inventory');
     });
 });
  
-});
-
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${3000}`);
 });
