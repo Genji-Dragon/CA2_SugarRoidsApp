@@ -150,7 +150,7 @@ app.get('/shopping', checkAuth, (req, res) => {
     // Fetch data from MySQL
     db.query('SELECT * FROM products', (error, results) => {
         if (error) throw error;
-        res.render('shopping', { user: req.session.user, products: results });
+        res.render('/shopping', { user: req.session.user, products: results });
       });
 });
 
@@ -158,7 +158,7 @@ app.post('/add-to-cart/:id', checkAuth, (req, res) => {
     const productId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    db.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+    db.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
@@ -170,13 +170,13 @@ app.post('/add-to-cart/:id', checkAuth, (req, res) => {
             }
 
             // Check if product already in cart
-            const existingItem = req.session.cart.find(item => item.productId === productId);
+            const existingItem = req.session.cart.find(item => item.candyId === candyId);
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
                 req.session.cart.push({
-                    productId: product.productId,
-                    productName: product.productName,
+                    candyId: product.candyId,
+                    candyName: product.candyName,
                     price: product.price,
                     quantity: quantity,
                     image: product.image
@@ -195,7 +195,7 @@ app.get('/cart', checkAuth, (req, res) => {
     res.render('cart', { cart, user: req.session.user });
 });
 
-app.get('/product/:id', checkAuth, (req, res) => {
+app.get('/candy/:id', checkAuth, (req, res) => {
   // Extract the product ID from the request parameters
   const candyId = req.params.id;
 
@@ -206,20 +206,20 @@ app.get('/product/:id', checkAuth, (req, res) => {
       // Check if any product with the given ID was found
       if (results.length > 0) {
           // Render HTML page with the product data
-          res.render('product', { product: results[0], user: req.session.user  });
+          res.render('candy', { candy: results[0], user: req.session.user  });
       } else {
           // If no product with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('Product not found');
+          res.status(404).send('Candy not found');
       }
   });
 });
 
 
-app.get('/addProduct', checkAuth, checkAdmin, (req, res) => {
-    res.render('addProduct', {user: req.session.user } ); 
+app.get('/addCandy', checkAuth, checkAdmin, (req, res) => {
+    res.render('addCandy', {user: req.session.user } ); 
 });
 
-app.post('/addProduct', upload.single('image'),  (req, res) => {
+app.post('/addCandy', upload.single('image'),  (req, res) => {
     // Extract product data from the request body
     const { candyId, candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn} = req.body;
     let image;
@@ -255,7 +255,7 @@ app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
         // Check if any product with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the product data
-            res.render('updateCandy', { product: results[0] });
+            res.render('/updateCandy', { product: results[0] });
         } else {
             // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Candy not found');
