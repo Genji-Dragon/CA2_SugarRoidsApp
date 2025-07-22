@@ -40,53 +40,53 @@
   </div>
 
   <div class="text-center mb-4">
-    <h2 class="fw-bold"><%= product.candyName %> Details</h2>
+    <h2 class="fw-bold"><%= candy.candyName %> Details</h2>
   </div>
 
-  <% if (product) { %>
+  <% if (candy) { %>
     <div class="row align-items-center">
       <div class="col-md-4 text-center mb-3">
-        <img src="../images/<%= product.image %>" alt="<%= product.candyName %>" class="img-fluid rounded shadow" style="max-height: 500px;">
+        <img src="../images/<%= candy.image %>" alt="<%= candy.candyName %>" class="img-fluid rounded shadow" style="max-height: 500px;">
       </div>
 
       
       <div class="col-md-8">
         <div class="mb-3">
           <h4 class="text-muted">Candy Name:</h4>
-          <p class="fs-5"><%= product.candyName %></p>
+          <p class="fs-5"><%= candy.candyName %></p>
         </div>
 
         <div class="mb-3">
           <h4 class="text-muted">Description:</h4>
-          <p><%= product.description %></p>
+          <p><%= candy.description %></p>
         </div>
 
         <div class="mb-3">
           <h4 class="text-muted">Quantity Available:</h4>
-          <p><%= product.quantity %> Packs</p>
+          <p><%= candy.quantity %> Packs</p>
         </div>
 
         <div class="mb-3">
           <h4 class="text-muted">Price:</h4>
-          <p class="fs-5 fw-bold text-success">$<%= product.price.toFixed(2) %></p>
+          <p class="fs-5 fw-bold text-success">$<%= candy.price.toFixed(2) %></p>
         </div>
 
         
         <div class="mb-3">
           <h4 class="text-muted">Ingredients & Allergens:</h4>
-          <p><%= product.ingredients %> <br> <strong>Allergens:</strong> <%= product.allergens %></p>
+          <p><%= candy.ingredients %> <br> <strong>Allergens:</strong> <%= candy.allergens %></p>
         </div>
 
         
         <div class="mb-3">
           <h4 class="text-muted">Storage Instructions:</h4>
-          <p><%= product.storageInstructions %></p>
+          <p><%= candy.storageInstructions %></p>
         </div>
 
         
         <div class="mb-3">
           <h4 class="text-muted">Made In:</h4>
-          <p><%= product.madeIn %></p>
+          <p><%= candy.madeIn %></p>
         </div>
 
   
