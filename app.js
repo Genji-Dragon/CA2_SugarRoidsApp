@@ -229,6 +229,7 @@ app.get('/product/:id', checkAuthenticated, (req, res) => {
   });
 });
 
+
 app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addProduct', {user: req.session.user } ); 
 });
