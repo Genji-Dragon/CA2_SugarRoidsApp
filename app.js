@@ -235,7 +235,7 @@ app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/addProduct', upload.single('image'),  (req, res) => {
     // Extract product data from the request body
-    const { name, quantity, price} = req.body;
+    const { candyId, candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn} = req.body;
     let image;
     if (req.file) {
         image = req.file.filename; // Save only the filename
@@ -243,9 +243,9 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO products (candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     // Insert the new product into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
+    connection.query(sql , [candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding product:", error);
