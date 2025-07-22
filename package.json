@@ -17,5 +17,13 @@
     "multer": "^2.0.1",
     "mysql2": "^3.14.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Genji-Dragon/CA2_SugarRoidsApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Genji-Dragon/CA2_SugarRoidsApp/issues"
+  },
+  "homepage": "https://github.com/Genji-Dragon/CA2_SugarRoidsApp#readme",
   "description": ""
 }
