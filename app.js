@@ -259,9 +259,9 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 });
 
 
-app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
+app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const productId = req.params.id;
-    const sql = 'SELECT * FROM products WHERE productId = ?';
+    const sql = 'SELECT * FROM products WHERE candyId = ?';
 
     // Fetch data from MySQL based on the product ID
     connection.query(sql , [productId], (error, results) => {
@@ -278,7 +278,7 @@ app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
+app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
     const productId = req.params.id;
     // Extract product data from the request body
     const { name, quantity, price } = req.body;
@@ -287,7 +287,7 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
+    const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
     // Insert the new product into the database
     connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
         if (error) {
