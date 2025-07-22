@@ -48,23 +48,17 @@ app.use(session({
 app.use(flash());
 
 // Middleware to check if user is logged in
-const checkAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        return next();
-    } else {
-        req.flash('error', 'Please log in to view this resource');
-        res.redirect('/login');
-    }
+const checkAuth = (req, res, next) => {
+  if (req.session.user) return next();
+  req.flash('error', 'You must be logged in');
+  res.redirect('/login');
 };
 
 // Middleware to check if user is admin
 const checkAdmin = (req, res, next) => {
-    if (req.session.user.role === 'admin') {
-        return next();
-    } else {
-        req.flash('error', 'Access denied');
-        res.redirect('/shopping');
-    }
+  if (req.session.user && req.session.user.role === 'admin') return next();
+  req.flash('error', 'Access denied');
+  res.redirect('/');
 };
 
 // Middleware for form validation
@@ -84,8 +78,8 @@ const validateRegistration = (req, res, next) => {
 };
 
 // Define routes
-app.get('/',  (req, res) => {
-    res.render('index', {user: req.session.user} );
+app.get('/', checkAuth, (req, res) => {
+  res.send(`<h1>Welcome, ${req.session.user.username} (${req.session.user.role})</h1><a href="/logout">Logout</a>`);
 });
 
 app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
@@ -97,57 +91,65 @@ app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-    res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
+  res.render('register', { errors: req.flash('error') });
 });
 
-app.post('/register', validateRegistration, (req, res) => {
+app.post('/register', (req, res) => {
+  const { username, email, password, role } = req.body;
 
-    const { username, email, password, address, contact, role } = req.body;
+  if (!username || !email || !password || !role) {
+    req.flash('error', 'Please fill in all fields');
+    return res.redirect('/register');
+  }
 
-    const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
-        if (err) {
-            throw err;
-        }
-        console.log(result);
-        req.flash('success', 'Registration successful! Please log in.');
-        res.redirect('/login');
-    });
+  if (password.length < 6) {
+    req.flash('error', 'Password must be at least 6 characters');
+    return res.redirect('/register');
+  }
+
+  const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, SHA1(?), ?)';
+  db.query(sql, [username, email, password, role], (err) => {
+    if (err) {
+      req.flash('error', 'Email already registered or database error');
+      return res.redirect('/register');
+    }
+    req.flash('success', 'Registration successful! Please login.');
+    res.redirect('/login');
+  });
 });
 
 app.get('/login', (req, res) => {
-    res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
+  res.render('login', { errors: req.flash('error'), success: req.flash('success') });
 });
 
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Validate email and password
-    if (!email || !password) {
-        req.flash('error', 'All fields are required.');
-        return res.redirect('/login');
+  if (!email || !password) {
+    req.flash('error', 'Please enter both email and password');
+    return res.redirect('/login');
+  }
+
+  const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
+  db.query(sql, [email, password], (err, results) => {
+    if (!err && results.length > 0) {
+      req.session.user = {
+        id: results[0].id,
+        username: results[0].username,
+        role: results[0].role
+      };
+      res.redirect('/');
+    } else {
+      req.flash('error', 'Invalid email or password');
+      res.redirect('/login');
     }
+  });
+});
 
-    const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
-        if (err) {
-            throw err;
-        }
-
-        if (results.length > 0) {
-            // Successful login
-            req.session.user = results[0]; 
-            req.flash('success', 'Login successful!');
-            if(req.session.user.role == 'user')
-                res.redirect('/shopping');
-            else
-                res.redirect('/inventory');
-        } else {
-            // Invalid credentials
-            req.flash('error', 'Invalid email or password.');
-            res.redirect('/login');
-        }
-    });
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
 });
 
 app.get('/shopping', checkAuthenticated, (req, res) => {
@@ -197,11 +199,6 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
 app.get('/cart', checkAuthenticated, (req, res) => {
     const cart = req.session.cart || [];
     res.render('cart', { cart, user: req.session.user });
-});
-
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
 });
 
 app.get('/product/:id', checkAuthenticated, (req, res) => {
@@ -310,5 +307,6 @@ app.get('/deleteProduct/:id', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${3000}`);
+});
