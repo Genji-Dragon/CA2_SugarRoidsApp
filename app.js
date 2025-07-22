@@ -22,38 +22,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const connection = mysql.createConnection({
-    host: 'sgevmu.h.filess.io',
-    port: 61002,
-    user: 'C237CA2_badsickdid',
-    password: 'e80264a28ac62cbb30aaaf37bcc57b8edbde70f0',
-    database: 'C237CA2_badsickdid'
-  });
-
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err);
-        return;
-    }
-    console.log('Connected to MySQL database');
+const db = mysql.createConnection({
+  host: 'sgevmu.h.filess.io',
+  port: 61002,
+  user: 'C237CA2_badsickdid',
+  password: 'e80264a28ac62cbb30aaaf37bcc57b8edbde70f0',
+  database: 'C237CA2_badsickdid'
 });
 
-// Set up view engine
-app.set('view engine', 'ejs');
-//  enable static files
-app.use(express.static('public'));
-// enable form processing
-app.use(express.urlencoded({
-    extended: false
-}));
+db.connect(() => {
+  console.log('Connected to remote MySQL database');
+});
 
-//TO DO: Insert code for Session Middleware below 
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: true,
-    // Session expires after 1 week of inactivity
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } 
+  secret: 'supersecretkey',
+  resave: false,
+  saveUninitialized: false
 }));
 
 app.use(flash());
