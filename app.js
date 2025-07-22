@@ -1,9 +1,14 @@
 const express = require('express');
-const mysql = require('mysql2');
 const session = require('express-session');
-const flash = require('connect-flash');
+const flash = require('express-flash');
+const bodyParser = require('body-parser');
+const mysql = require('mysql2');
+const path = require('path');
 const multer = require('multer');
+
 const app = express();
+const PORT = 3000;
+
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
