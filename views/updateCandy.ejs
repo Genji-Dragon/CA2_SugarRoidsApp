@@ -21,7 +21,7 @@
             <a class="nav-link" href="/inventory">Inventory</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/addCandy">Add New Product</a>
+            <a class="nav-link" href="/addCandy">Add Candy</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
@@ -33,7 +33,7 @@
 
   <!-- Main content -->
   <div class="container mt-4">
-    <h2 class="text-center mb-4">Update Product</h2>
+    <h2 class="text-center mb-4">Update Candy</h2>
     
     <% if (product) { %>
       <form action="/updateProductCandy/<%= product.candyId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
