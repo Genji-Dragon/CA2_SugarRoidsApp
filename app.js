@@ -270,7 +270,7 @@ app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
         // Check if any product with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the product data
-            res.render('updateProductCandy', { product: results[0] });
+            res.render('updateProduct', { product: results[0] });
         } else {
             // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Product not found');
