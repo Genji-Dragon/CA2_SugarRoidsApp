@@ -259,7 +259,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 });
 
 
-app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
+app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const productId = req.params.id;
     const sql = 'SELECT * FROM products WHERE productId = ?';
 
@@ -278,7 +278,7 @@ app.get('/updateProductCandy/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
+app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
     const productId = req.params.id;
     // Extract product data from the request body
     const { name, quantity, price } = req.body;
