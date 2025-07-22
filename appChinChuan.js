@@ -1,43 +1,53 @@
-//  GET route to render the update product form page
+//  GET route to render the update product form based on product ID
 app.get('/updateProductCandy/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const productId = req.params.id; //  Extract the product ID from URL
+    const productId = req.params.id; //  Extract product ID from URL
 
-    const sql = 'SELECT * FROM products WHERE productId = ?'; //  SQL query to get product details
+    const sql = 'SELECT * FROM products WHERE productId = ?'; // 🔍 SQL query to fetch product info
 
     connection.query(sql, [productId], (error, results) => {
-        if (error) return res.status(500).send('Database error'); // Handle database query error
-
-        if (results.length === 0) {
-            return res.status(404).send('Product not found'); //  Product not found in DB
+        if (error) {
+            //  Query error – send server error response
+            return res.status(500).send('Database error');
         }
 
-        res.render('updateProduct', { product: results[0] }); // Render form with product data
+        if (results.length === 0) {
+            //  No matching product – send not found
+            return res.status(404).send('Product not found');
+        }
+
+        //  Render update form with fetched product data
+        res.render('updateProduct', { product: results[0] });
     });
 });
 
-//  POST route to handle form submission and update the product
+//  POST route to process and update the submitted product form
 app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id; // 🆔 Extract product ID from URL
+    const productId = req.params.id; //  Extract product ID from URL
 
-    // Extract submitted product data from form
+    //  Get submitted data from the request body
     const { name, quantity, price, currentImage } = req.body;
 
-    // Determine which image to use: new upload or existing
+    // Use uploaded image filename if available; otherwise, keep existing one
     const image = req.file?.filename || currentImage;
 
-    // SQL query to update product in the database
+    //  SQL query to update product details in the DB
     const sql = `
         UPDATE products
         SET productName = ?, quantity = ?, price = ?, image = ?
         WHERE productId = ?
     `;
 
-    connection.query(sql, [name, quantity, price, image, productId], (error) => {
+    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
         if (error) {
-            console.error('Error updating product:', error); //  Log error for debugging
-            return res.status(500).send('Error updating product'); //  Send failure response
+            //  Error during update – log and inform user
+            console.error('Error updating product:', error);
+            return res.status(500).send('Error updating product');
         }
 
-        res.redirect('/inventory'); //  Redirect to inventory after successful update
+        //  Optional: Log affected rows for debugging
+        console.log('Product updated. Rows affected:', results.affectedRows);
+
+        //  Redirect to inventory page after successful update
+        res.redirect('/inventory');
     });
 });
