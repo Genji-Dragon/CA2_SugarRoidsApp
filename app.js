@@ -69,7 +69,7 @@ app.get('/', checkAuth, (req, res) => {
 
 app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    db.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
       res.render('inventory', { products: results, user: req.session.user });
     });
@@ -116,7 +116,7 @@ app.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    db.query(sql, [email, password], (err, results) => {
         if (err) {
             console.log('Login error:', err);
             req.flash('error', 'Something went wrong.');
@@ -148,7 +148,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/shopping', checkAuth, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    db.query('SELECT * FROM products', (error, results) => {
         if (error) throw error;
         res.render('shopping', { user: req.session.user, products: results });
       });
@@ -158,7 +158,7 @@ app.post('/add-to-cart/:id', checkAuth, (req, res) => {
     const productId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+    db.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
@@ -200,7 +200,7 @@ app.get('/product/:id', checkAuth, (req, res) => {
   const candyId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
+  db.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
       if (error) throw error;
 
       // Check if any product with the given ID was found
@@ -231,7 +231,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
     const sql = 'INSERT INTO products (candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     // Insert the new product into the database
-    connection.query(sql , [candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn], (error, results) => {
+    db.query(sql , [candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding product:", error);
@@ -249,7 +249,7 @@ app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
     const sql = 'SELECT * FROM products WHERE candyId = ?';
 
     // Fetch data from MySQL based on the product ID
-    connection.query(sql , [candyId], (error, results) => {
+    db.query(sql , [candyId], (error, results) => {
         if (error) throw error;
 
         // Check if any product with the given ID was found
@@ -274,7 +274,7 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
     // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, candyId], (error, results) => {
+    db.query(sql, [name, quantity, price, image, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating candy:", error);
@@ -291,7 +291,7 @@ app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candy
 
 // Step 1: Fetch the product's image filename
     const getImageQuery = 'SELECT image FROM products WHERE candyId = ?';
-    connection.query(getImageQuery, [candyId], (err, results) => {
+    db.query(getImageQuery, [candyId], (err, results) => {
         if (err) {
         console.error("Error fetching cabdy image:", err);
             return res.status(500).send('Internal server error');
@@ -306,7 +306,7 @@ app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candy
 
 // Step 2: Delete the product from the database
     const deleteQuery = 'DELETE FROM products WHERE candyId = ?';
-    connection.query(deleteQuery, [candyId], (err, result) => {
+    db.query(deleteQuery, [candyId], (err, result) => {
         if (err) {
             console.error("Error deleting candy from DB:", err);
             return res.status(500).send('Database delete error');
