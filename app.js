@@ -37,7 +37,7 @@ db.connect(() => {
 
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
@@ -150,12 +150,12 @@ app.get('/shopping', checkAuth, (req, res) => {
     // Fetch data from MySQL
     db.query('SELECT * FROM products', (error, results) => {
         if (error) throw error;
-        res.render('/shopping', { user: req.session.user, products: results });
+        res.render('shopping', { user: req.session.user, products: results });
       });
 });
 
 app.post('/add-to-cart/:id', checkAuth, (req, res) => {
-    const productId = parseInt(req.params.id);
+    const candyId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
     db.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
@@ -274,7 +274,7 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
     // Insert the new product into the database
-    db.query(sql, [name, quantity, price, image, candyId], (error, results) => {
+    db.query(sql, [candyName, quantity, price, image, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating candy:", error);
