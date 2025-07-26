@@ -75,7 +75,7 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  res.render('register', { errors: req.flash('error') });
+  res.render('register', { errors: req.flash('error'), formData: {} });
 });
 
 app.post('/register', (req, res) => {
@@ -83,19 +83,22 @@ app.post('/register', (req, res) => {
 
   if (!username || !email || !password || !role) {
     req.flash('error', 'Please fill in all fields');
-    return res.redirect('/register');
+    // When redirecting, pass the current request body as formData
+    return res.render('register', { errors: req.flash('error'), formData: req.body });
   }
 
   if (password.length < 6) {
     req.flash('error', 'Password must be at least 6 characters');
-    return res.redirect('/register');
+    // When redirecting, pass the current request body as formData
+    return res.render('register', { errors: req.flash('error'), formData: req.body });
   }
 
   const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, SHA1(?), ?)';
   db.query(sql, [username, email, password, role], (err) => {
     if (err) {
       req.flash('error', 'Email already registered or database error');
-      return res.redirect('/register');
+      // When redirecting, pass the current request body as formData
+      return res.render('register', { errors: req.flash('error'), formData: req.body });
     }
     req.flash('success', 'Registration successful! Please login.');
     res.redirect('/login');
