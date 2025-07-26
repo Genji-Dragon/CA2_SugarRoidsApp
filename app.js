@@ -353,6 +353,46 @@ app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candy
         res.redirect('/inventory');
     });
 });
+
+// Route to display all users (Admin Only)
+app.get('/admin/users', checkAuth, checkAdmin, (req, res) => {
+    const sql = 'SELECT id, username, email, role, address, contact FROM users'; // Don't fetch passwords!
+    db.query(sql, (err, users) => {
+        if (err) {
+            console.error("Error fetching users:", err);
+            req.flash('error', 'Error retrieving users from database.');
+            return res.redirect('/inventory'); // Or to an admin dashboard
+        }
+        res.render('adminUsers', { users: users, user: req.session.user, error: req.flash('error'), success: req.flash('success') });
+    });
+});
+
+// Route to handle user deletion (Admin Only)
+app.post('/admin/users/delete/:id', checkAuth, checkAdmin, (req, res) => {
+    const userIdToDelete = req.params.id;
+    const loggedInUserId = req.session.user.id;
+
+    // IMPORTANT: Add an additional check here if you don't want admins to delete themselves
+    if (req.session.user.id == loggedInUserId) {
+        req.flash('error', 'You cannot delete your own account!');
+        return res.redirect('/admin/users');
+    }
+
+    const sql = 'DELETE FROM users WHERE id = ?';
+    db.query(sql, [userIdToDelete], (err, result) => {
+        if (err) {
+            console.error("Error deleting user:", err);
+            req.flash('error', 'Error deleting user from database.');
+            return res.redirect('/admin/users');
+        }
+        if (result.affectedRows === 0) {
+            req.flash('error', 'User not found.');
+        } else {
+            req.flash('success', 'User deleted successfully.');
+        }
+        res.redirect('/admin/users');
+    });
+});
  
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${3000}`);
