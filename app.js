@@ -66,14 +66,6 @@ app.get('/', checkAuth, (req, res) => {
   res.send(`<h1>Welcome, ${req.session.user.username} (${req.session.user.role})</h1><a href="/logout">Logout</a>`);
 });
 
-app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
-    // Fetch data from MySQL
-    db.query('SELECT * FROM products', (error, results) => {
-      if (error) throw error;
-      res.render('inventory', { products: results, user: req.session.user });
-    });
-});
-
 app.get('/register', (req, res) => {
   res.render('register', { errors: req.flash('error'), formData: {} });
 });
