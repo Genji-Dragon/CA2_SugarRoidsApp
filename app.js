@@ -161,13 +161,22 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
     }
 
     // Fetch data from MySQL
-    db.query(sql, params, (error, results) => {
-      if (error) {
-          console.error("Error fetching products:", error); // More specific error logging
+    db.query(sql, params, (dbError, results) => {
+      if (dbError) {
+          console.error("Error fetching products:", dbError); // More specific error logging
           // It's better to render the page with an error message rather than crashing
-          return res.render('inventory', { products: [], user: req.session.user, error: 'Error fetching products.' });
+          return res.render('inventory', {
+            products: [],
+            user: req.session.user,
+            error: 'Error fetching products.'
+          });
       }
-      res.render('inventory', { products: results, user: req.session.user, searchTerm: searchTerm, error: null });
+      res.render('inventory', {
+        products: results,
+        user: req.session.user,
+        searchTerm: searchTerm,
+        error: null
+      });
     });
 });
 
