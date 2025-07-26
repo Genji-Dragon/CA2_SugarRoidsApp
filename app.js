@@ -168,7 +168,8 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
           return res.render('inventory', {
             products: [],
             user: req.session.user,
-            error: 'Error fetching products.'
+            searchTerm: searchTerm,
+            error: 'There was an error retrieving inventory from the database.'
           });
       }
       res.render('inventory', {
