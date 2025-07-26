@@ -148,6 +148,29 @@ app.get('/logout', (req, res) => {
   });
 });
 
+app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
+    // Get the search term from the query parameters, if it exists
+    const searchTerm = req.query.search;
+    let sql = 'SELECT * FROM products';
+    let params = [];
+
+    if (searchTerm) {
+        // Add WHERE clause for searching if a search term is provided
+        sql += ' WHERE candyName LIKE ?';
+        params.push('%' + searchTerm + '%'); // Use % for partial matching
+    }
+
+    // Fetch data from MySQL
+    db.query(sql, params, (error, results) => {
+      if (error) {
+          console.error("Error fetching products:", error); // More specific error logging
+          // It's better to render the page with an error message rather than crashing
+          return res.render('inventory', { products: [], user: req.session.user, error: 'Error fetching products.' });
+      }
+      res.render('inventory', { products: results, user: req.session.user, searchTerm: searchTerm, error: null });
+    });
+});
+
 app.get('/shopping', checkAuth, (req, res) => {
     // Fetch data from MySQL
     db.query('SELECT * FROM products', (error, results) => {

@@ -37,6 +37,22 @@
     <p class="text-muted">Manage your sweet inventory below</p>
   </div>
 
+    <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <form action="/inventory" method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by candy name..." name="search" value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+            <% if (searchTerm) { %>
+                <a href="/inventory" class="btn btn-outline-danger">Clear Search</a>
+            <% } %>
+        </div>
+    </form>
+
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="table-responsive">
@@ -52,6 +68,15 @@
             </tr>
           </thead>
           <tbody>
+            <% if (products.length === 0 && searchTerm) { %>
+              <tr>
+                <td colspan="6" class="text-center">No candy found for "<%= searchTerm %>".</td>
+              </tr>
+            <% } else if (products.length === 0) { %>
+              <tr>
+                <td colspan="6" class="text-center">No candy in inventory.</td>
+              </tr>
+            <% } else { %>
             <% for(let i = 0; i < products.length; i++) { %>
               <tr>
                 <td>
@@ -73,6 +98,7 @@
                   <a href="/deleteProduct/<%= products[i].candyId %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
                 </td>
               </tr>
+            <% } %>
             <% } %>
           </tbody>
         </table>
