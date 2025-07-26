@@ -79,9 +79,9 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const { username, email, password, role } = req.body;
+  const { username, email, password, role, address, contact } = req.body;
 
-  if (!username || !email || !password || !role) {
+  if (!username || !email || !password || !role || !address || !contact) {
     req.flash('error', 'Please fill in all fields');
     // When redirecting, pass the current request body as formData
     return res.render('register', { errors: req.flash('error'), formData: req.body });
@@ -93,8 +93,8 @@ app.post('/register', (req, res) => {
     return res.render('register', { errors: req.flash('error'), formData: req.body });
   }
 
-  const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, SHA1(?), ?)';
-  db.query(sql, [username, email, password, role], (err) => {
+  const sql = 'INSERT INTO users (username, email, password, role, address, contact) VALUES (?, ?, SHA1(?), ?, ?, ?)';
+  db.query(sql, [username, email, password, role, address, contact], (err) => {
     if (err) {
       req.flash('error', 'Email already registered or database error');
       // When redirecting, pass the current request body as formData
