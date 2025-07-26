@@ -356,16 +356,51 @@ app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candy
 
 // Route to display all users (Admin Only)
 app.get('/admin/users', checkAuth, checkAdmin, (req, res) => {
-    const sql = 'SELECT id, username, email, role, address, contact FROM users'; // Don't fetch passwords!
-    db.query(sql, (err, users) => {
+    const searchTerm = req.query.search;
+    const roleFilter = req.query.role; // <-- Get the role filter from query params
+
+    let sql = 'SELECT id, username, email, role, address, contact FROM users';
+    let params = [];
+    let conditions = []; // Array to hold WHERE clause conditions
+
+    if (searchTerm) {
+        conditions.push('(username LIKE ? OR email LIKE ? OR role LIKE ?)');
+        params.push('%' + searchTerm + '%', '%' + searchTerm + '%', '%' + searchTerm + '%');
+    }
+
+    if (roleFilter && roleFilter !== 'all') { // <-- Add role filter condition
+        conditions.push('role = ?');
+        params.push(roleFilter);
+    }
+
+    if (conditions.length > 0) {
+        sql += ' WHERE ' + conditions.join(' AND '); // Combine conditions with AND
+    }
+
+    db.query(sql, params, (err, users) => {
         if (err) {
             console.error("Error fetching users:", err);
             req.flash('error', 'Error retrieving users from database.');
-            return res.redirect('/inventory'); // Or to an admin dashboard
+            return res.render('adminUsers', {
+                users: [],
+                user: req.session.user,
+                searchTerm: searchTerm,
+                roleFilter: roleFilter || 'all', // Pass back the selected filter
+                error: req.flash('error'),
+                success: req.flash('success')
+            });
         }
-        res.render('adminUsers', { users: users, user: req.session.user, error: req.flash('error'), success: req.flash('success') });
+        res.render('adminUsers', {
+            users: users,
+            user: req.session.user,
+            searchTerm: searchTerm,
+            roleFilter: roleFilter || 'all', // Pass back the selected filter
+            error: req.flash('error'),
+            success: req.flash('success')
+        });
     });
 });
+
 
 // Route to handle user deletion (Admin Only)
 app.post('/admin/users/delete/:id', checkAuth, checkAdmin, (req, res) => {

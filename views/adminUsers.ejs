@@ -37,6 +37,29 @@
         <div class="alert alert-success"><%= success %></div>
     <% } %>
 
+            <form action="/admin/users" method="GET" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search by username, email, or role..." name="search" value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <select class="form-select" name="role" onchange="this.form.submit()">
+                            <option value="all" <%= roleFilter === 'all' ? 'selected' : '' %>>All Roles</option>
+                            <option value="admin" <%= roleFilter === 'admin' ? 'selected' : '' %>>Admin</option>
+                            <option value="user" <%= roleFilter === 'user' ? 'selected' : '' %>>User</option>
+                        </select>
+                        <% if (searchTerm || (roleFilter && roleFilter !== 'all')) { %>
+                            <a href="/admin/users" class="btn btn-outline-danger">Clear Filters</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     <div class="container my-5">
         <div class="alert alert-info shadow-sm rounded-pill text-center fw-semibold">
             Welcome, <%= user.username %> (<%= user.role %>)
@@ -82,6 +105,12 @@
                             <% } else { %>
                                 <tr>
                                     <td colspan="7" class="text-center">No users found.</td>
+                                        <% if (searchTerm || (roleFilter && roleFilter !== 'all')) { %>
+                                            No users found matching your filters.
+                                        <% } else { %>
+                                            No users registered.
+                                        <% } %>
+                                    </td>
                                 </tr>
                             <% } %>
                         </tbody>
