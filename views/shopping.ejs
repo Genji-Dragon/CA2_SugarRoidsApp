@@ -32,6 +32,23 @@
     <br>
     <div class="text-center"><h2>Products from Sugar Roids</h2></div>
     <br>
+
+        <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <form action="/shopping" method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by candy name..." name="search" value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+            <% if (searchTerm) { %>
+                <a href="/shopping" class="btn btn-outline-danger">Clear Search</a>
+            <% } %>
+        </div>
+    </form>
+    
     <table class="table table-hover small text-center">
       <thead>
           <tr>

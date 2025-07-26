@@ -155,7 +155,7 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
     // Fetch data from MySQL
     db.query(sql, params, (dbError, results) => {
       if (dbError) {
-          console.error("Error fetching products:", dbError); // More specific error logging
+          console.error("Error fetching candy:", dbError); // More specific error logging
           // It's better to render the page with an error message rather than crashing
           return res.render('inventory', {
             products: [],
@@ -174,11 +174,36 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
 });
 
 app.get('/shopping', checkAuth, (req, res) => {
+    // Get the search term from the query parameters, if it exists
+    const searchTerm = req.query.search;
+    let sql = 'SELECT * FROM products';
+    let params = [];
+
+    if (searchTerm) {
+        // Add WHERE clause for searching if a search term is provided
+        sql += ' WHERE candyName LIKE ?';
+        params.push('%' + searchTerm + '%'); // Use % for partial matching
+    }
+
     // Fetch data from MySQL
-    db.query('SELECT * FROM products', (error, results) => {
-        if (error) throw error;
-        res.render('shopping', { user: req.session.user, products: results });
+    db.query(sql, params, (dbError, results) => {
+      if (dbError) {
+          console.error("Error fetching candy:", dbError); // More specific error logging
+          // It's better to render the page with an error message rather than crashing
+          return res.render('shopping', {
+            products: [],
+            user: req.session.user,
+            searchTerm: searchTerm,
+            error: 'There was an error retrieving candy for shopping.'
+          });
+      }
+      res.render('shopping', {
+        user: req.session.user,
+        products: results,
+        searchTerm: searchTerm,
+        error: null
       });
+    });
 });
 
 app.post('/add-to-cart/:id', checkAuth, (req, res) => {
