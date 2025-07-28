@@ -346,7 +346,7 @@ app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updatProductCandy/:id', upload.single('image'), (req, res) => {
+app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
     const candyId = req.params.id;
     // Extract candy data from the request body
     const { candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn } = req.body;
