@@ -247,6 +247,37 @@ app.get('/cart', checkAuth, (req, res) => {
     res.render('cart', { cart, user: req.session.user });
 });
 
+app.post('/update-cart-quantity/:id', checkAuth, (req, res) => {
+    const candyId = parseInt(req.params.id);
+    const newQuantity = parseInt(req.body.quantity);
+
+    if (isNaN(newQuantity) || newQuantity <= 0) {
+        req.flash('error', 'Quantity must be a positive number.');
+        return res.redirect('/cart');
+    }
+
+    if (req.session.cart) {
+        const itemIndex = req.session.cart.findIndex(item => item.candyId === candyId);
+        if (itemIndex > -1) {
+            req.session.cart[itemIndex].quantity = newQuantity;
+            req.flash('success', 'Cart quantity updated.');
+        } else {
+            req.flash('error', 'Item not found in cart.');
+        }
+    }
+    res.redirect('/cart');
+});
+
+app.post('/remove-from-cart/:id', checkAuth, (req, res) => {
+    const candyId = parseInt(req.params.id);
+
+    if (req.session.cart) {
+        req.session.cart = req.session.cart.filter(item => item.candyId !== candyId);
+        req.flash('success', 'Item removed from cart.');
+    }
+    res.redirect('/cart');
+});
+
 app.get('/candy/:id', checkAuth, (req, res) => {
   // Extract the candy ID from the request parameters
   const candyId = req.params.id;
