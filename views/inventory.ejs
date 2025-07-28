@@ -8,7 +8,7 @@
   <title>Sugar Roids App</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-sm" style="background-color: #AAF0D1;">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">Sugar Roids App</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
@@ -60,7 +60,7 @@
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-hover align-middle text-center">
-          <thead class="table-dark">
+          <thead class="table-danger">
             <tr>
               <th scope="col">Candy Name</th>
               <th scope="col">Candy Image</th>
@@ -89,7 +89,7 @@
                   <img src="images/<%= products[i].image %>" class="img-fluid rounded" style="max-width: 80px;">
                 </td>
                 <td>
-                  <span class="badge bg-dark"><%= products[i].quantity %></span>
+                  <span class="badge" style="background-color: #E6E6FA; color: #4B0082;"><%= products[i].quantity %></span>
                 </td>
                 <td>
                   <strong>$<%= products[i].price.toFixed(2) %></strong>
