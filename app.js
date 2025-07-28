@@ -405,10 +405,9 @@ app.get('/admin/users', checkAuth, checkAdmin, (req, res) => {
 // Route to handle user deletion (Admin Only)
 app.post('/admin/users/delete/:id', checkAuth, checkAdmin, (req, res) => {
     const userIdToDelete = req.params.id;
-    const loggedInUserId = req.session.user.id;
 
     // IMPORTANT: Add an additional check here if you don't want admins to delete themselves
-    if (req.session.user.id == loggedInUserId) {
+    if (req.session.user.id == userIdToDelete) {
         req.flash('error', 'You cannot delete your own account!');
         return res.redirect('/admin/users');
     }
