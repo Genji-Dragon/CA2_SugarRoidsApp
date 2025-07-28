@@ -370,7 +370,7 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
 });
 
 // DELETE candy (Admin Only)
-app.get('/deletecandy/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
+app.get('/deleteCandy/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
 
 // Step 1: Delete the candy from the database
     const deleteQuery = 'DELETE FROM candys WHERE candyId = ?';
