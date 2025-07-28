@@ -66,27 +66,27 @@
 
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
-          <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+          <textarea class="form-control" id="description" name="description" rows="3" value="<%= product.description %>" required></textarea>
         </div>
 
         <div class="mb-3">
           <label for="ingredients" class="form-label">Ingredients</label>
-          <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required></textarea>
+          <textarea class="form-control" id="ingredients" name="ingredients" rows="3" value="<%= product.ingredients %>" required></textarea>
         </div>
 
         <div class="mb-3">
           <label for="allergens" class="form-label">Allergens</label>
-          <input type="text" class="form-control" id="allergens" name="allergens" placeholder="e.g. nuts, dairy">
+          <input type="text" class="form-control" id="allergens" name="allergens" placeholder="e.g. nuts, dairy" value="<%= product.allergens %>">
         </div>
 
         <div class="mb-3">
           <label for="storage" class="form-label">Storage Instructions</label>
-          <input type="text" class="form-control" id="storage" name="storageInstructions" placeholder="e.g. Keep refrigerated">
+          <input type="text" class="form-control" id="storage" name="storageInstructions" placeholder="e.g. Keep refrigerated" value="<%= product.storageInstructions %>">
         </div>
 
       <div class="mb-3">
         <label for="madeIn" class="form-label">Made In</label>
-        <input type="text" class="form-control" id="madeIn" name="madeIn" placeholder="Country of origin">
+        <input type="text" class="form-control" id="madeIn" name="madeIn" placeholder="Country of origin" value="<%= product.Country %>" >
       </div>
 
 
