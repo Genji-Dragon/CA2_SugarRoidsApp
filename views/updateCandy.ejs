@@ -64,6 +64,32 @@
           <input class="form-control" type="file" id="image" name="image" accept="image/*">
         </div>
 
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="ingredients" class="form-label">Ingredients</label>
+          <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="allergens" class="form-label">Allergens</label>
+          <input type="text" class="form-control" id="allergens" name="allergens" placeholder="e.g. nuts, dairy">
+        </div>
+
+        <div class="mb-3">
+          <label for="storage" class="form-label">Storage Instructions</label>
+          <input type="text" class="form-control" id="storage" name="storageInstructions" placeholder="e.g. Keep refrigerated">
+        </div>
+
+      <div class="mb-3">
+        <label for="madeIn" class="form-label">Made In</label>
+        <input type="text" class="form-control" id="madeIn" name="madeIn" placeholder="Country of origin">
+      </div>
+
+
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary">Update Product</button>
           <a href="/inventory" class="btn btn-secondary">Back to Inventory</a>
