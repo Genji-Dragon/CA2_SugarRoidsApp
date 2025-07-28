@@ -296,7 +296,7 @@ app.post('/addCandy', upload.single('image'),  (req, res) => {
 });
 
 
-app.get('/updatecandyCandy/:id',checkAuth, checkAdmin, (req,res) => {
+app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
     const candyId = req.params.id;
     const sql = 'SELECT * FROM candys WHERE candyId = ?';
 
@@ -307,7 +307,7 @@ app.get('/updatecandyCandy/:id',checkAuth, checkAdmin, (req,res) => {
         // Check if any candy with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the candy data
-            res.render('updateCandy', { candy: results[0] });
+            res.render('updateCandy', { candys: results[0] });
         } else {
             // If no candy with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Candy not found');
@@ -315,7 +315,7 @@ app.get('/updatecandyCandy/:id',checkAuth, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updatecandyCandy/:id', upload.single('image'), (req, res) => {
+app.post('/updatProductCandy/:id', upload.single('image'), (req, res) => {
     const candyId = req.params.id;
     // Extract candy data from the request body
     const { candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn } = req.body;

@@ -65,12 +65,12 @@
           </tr>
       </thead>
       <tbody>
-        <% for(let i=0; i < products.length; i++) { %>
+        <% for(let i=0; i < candys.length; i++) { %>
           <tr>
-            <td><a href="/candy/<%= products[i].candyId %>" ><%= products[i].candyName %></a></td>
-            <td><img src = "images/<%= products[i].image %>" width="20%"></td>
-            <td><%= products[i].quantity %></td>
-            <td>$<%= products[i].price.toFixed(2) %></td>
+            <td><a href="/candy/<%= candys[i].candyId %>" ><%= candys[i].candyName %></a></td>
+            <td><img src = "images/<%= candys[i].image %>" width="20%"></td>
+            <td><%= candys[i].quantity %></td>
+            <td>$<%= candys[i].price.toFixed(2) %></td>
             <!-- <td>
               <select id="role" name="role" class="form-control" >
                 <option value="1" selected >1</option>
@@ -83,7 +83,7 @@
             <!-- Buy Link -->
             <!-- <td><a href="/buyProduct/<%#= products[i].productId %>" class="btn btn-primary mt-3">Buy</a></td> -->
             <td>
-              <select class="form-control" onchange="document.getElementById('quantity-<%= products[i].candyId %>').value = this.value">
+              <select class="form-control" onchange="document.getElementById('quantity-<%= candys[i].candyId %>').value = this.value">
                 <% for (let q = 1; q <= 5; q++) { %>
                   <option value="<%= q %>"><%= q %></option>
                 <% } %>
@@ -91,8 +91,8 @@
             </td>
 
             <td>
-                <form action="/add-to-cart/<%= products[i].candyId %>" method="POST">
-                  <input type="hidden" name="quantity" id="quantity-<%= products[i].candyId %>" value="1">
+                <form action="/add-to-cart/<%= candys[i].candyId %>" method="POST">
+                  <input type="hidden" name="quantity" id="quantity-<%= candys[i].candyId %>" value="1">
                   <button type="submit" class="btn btn-primary mt-3">Buy</button>
                 </form>
             </td>
