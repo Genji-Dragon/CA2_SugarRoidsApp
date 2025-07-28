@@ -143,7 +143,7 @@ app.get('/logout', (req, res) => {
 app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
     // Get the search term from the query parameters, if it exists
     const searchTerm = req.query.search;
-    let sql = 'SELECT * FROM products';
+    let sql = 'SELECT * FROM candys';
     let params = [];
 
     if (searchTerm) {
@@ -158,14 +158,14 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
           console.error("Error fetching candy:", dbError); // More specific error logging
           // It's better to render the page with an error message rather than crashing
           return res.render('inventory', {
-            products: [],
+            candys: [],
             user: req.session.user,
             searchTerm: searchTerm,
             error: 'There was an error retrieving inventory from the database.'
           });
       }
       res.render('inventory', {
-        products: results,
+        candys: results,
         user: req.session.user,
         searchTerm: searchTerm,
         error: null
@@ -176,7 +176,7 @@ app.get('/inventory', checkAuth, checkAdmin, (req, res) => {
 app.get('/shopping', checkAuth, (req, res) => {
     // Get the search term from the query parameters, if it exists
     const searchTerm = req.query.search;
-    let sql = 'SELECT * FROM products';
+    let sql = 'SELECT * FROM candys';
     let params = [];
 
     if (searchTerm) {
@@ -191,7 +191,7 @@ app.get('/shopping', checkAuth, (req, res) => {
           console.error("Error fetching candy:", dbError); // More specific error logging
           // It's better to render the page with an error message rather than crashing
           return res.render('shopping', {
-            products: [],
+            candys: [],
             user: req.session.user,
             searchTerm: searchTerm,
             error: 'There was an error retrieving candy for shopping.'
@@ -199,7 +199,7 @@ app.get('/shopping', checkAuth, (req, res) => {
       }
       res.render('shopping', {
         user: req.session.user,
-        products: results,
+        candys: results,
         searchTerm: searchTerm,
         error: null
       });
@@ -210,34 +210,34 @@ app.post('/add-to-cart/:id', checkAuth, (req, res) => {
     const candyId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    db.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
+    db.query('SELECT * FROM candys WHERE candyId = ?', [candyId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
-            const product = results[0];
+            const candy = results[0];
 
             // Initialize cart in session if not exists
             if (!req.session.cart) {
                 req.session.cart = [];
             }
 
-            // Check if product already in cart
+            // Check if candy already in cart
             const existingItem = req.session.cart.find(item => item.candyId === candyId);
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
                 req.session.cart.push({
-                    candyId: product.candyId,
-                    candyName: product.candyName,
-                    price: product.price,
+                    candyId: candy.candyId,
+                    candyName: candy.candyName,
+                    price: candy.price,
                     quantity: quantity,
-                    image: product.image
+                    image: candy.image
                 });
             }
 
             res.redirect('/cart');
         } else {
-            res.status(404).send("Product not found");
+            res.status(404).send("Candy not found");
         }
     });
 });
@@ -248,19 +248,19 @@ app.get('/cart', checkAuth, (req, res) => {
 });
 
 app.get('/candy/:id', checkAuth, (req, res) => {
-  // Extract the product ID from the request parameters
+  // Extract the candy ID from the request parameters
   const candyId = req.params.id;
 
-  // Fetch data from MySQL based on the product ID
-  db.query('SELECT * FROM products WHERE candyId = ?', [candyId], (error, results) => {
+  // Fetch data from MySQL based on the candy ID
+  db.query('SELECT * FROM candys WHERE candyId = ?', [candyId], (error, results) => {
       if (error) throw error;
 
-      // Check if any product with the given ID was found
+      // Check if any candy with the given ID was found
       if (results.length > 0) {
-          // Render HTML page with the product data
+          // Render HTML page with the candy data
           res.render('candy', { candy: results[0], user: req.session.user  });
       } else {
-          // If no product with the given ID was found, render a 404 page or handle it accordingly
+          // If no candy with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('Candy not found');
       }
   });
@@ -272,7 +272,7 @@ app.get('/addCandy', checkAuth, checkAdmin, (req, res) => {
 });
 
 app.post('/addCandy', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
+    // Extract candy data from the request body
     const { candyId, candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn} = req.body;
     let image;
     if (req.file) {
@@ -281,13 +281,13 @@ app.post('/addCandy', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO products (candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    // Insert the new product into the database
+    const sql = 'INSERT INTO candys (candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    // Insert the new candy into the database
     db.query(sql , [candyId, candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error adding product:", error);
-            res.status(500).send('Error adding product');
+            console.error("Error adding candy:", error);
+            res.status(500).send('Error adding candy');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -296,36 +296,36 @@ app.post('/addCandy', upload.single('image'),  (req, res) => {
 });
 
 
-app.get('/updateProductCandy/:id',checkAuth, checkAdmin, (req,res) => {
+app.get('/updatecandyCandy/:id',checkAuth, checkAdmin, (req,res) => {
     const candyId = req.params.id;
-    const sql = 'SELECT * FROM products WHERE candyId = ?';
+    const sql = 'SELECT * FROM candys WHERE candyId = ?';
 
-    // Fetch data from MySQL based on the product ID
+    // Fetch data from MySQL based on the candy ID
     db.query(sql , [candyId], (error, results) => {
         if (error) throw error;
 
-        // Check if any product with the given ID was found
+        // Check if any candy with the given ID was found
         if (results.length > 0) {
-            // Render HTML page with the product data
-            res.render('updateCandy', { product: results[0] });
+            // Render HTML page with the candy data
+            res.render('updateCandy', { candy: results[0] });
         } else {
-            // If no product with the given ID was found, render a 404 page or handle it accordingly
+            // If no candy with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Candy not found');
         }
     });
 });
 
-app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
+app.post('/updatecandyCandy/:id', upload.single('image'), (req, res) => {
     const candyId = req.params.id;
-    // Extract product data from the request body
+    // Extract candy data from the request body
     const { candyName, quantity, price, description, ingredients, allergens, storageInstructions, madeIn } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
     if (req.file) { //if new image is uploaded
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image = ?, description = ?, ingredients = ?, allergens = ?, storageInstructions = ?, madeIn = ? WHERE candyId = ?';
-    // Insert the new product into the database
+    const sql = 'UPDATE candys SET candyName = ? , quantity = ?, price = ?, image = ?, description = ?, ingredients = ?, allergens = ?, storageInstructions = ?, madeIn = ? WHERE candyId = ?';
+    // Insert the new candy into the database
     db.query(sql, [candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
@@ -338,11 +338,11 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
     });
 });
 
-// DELETE PRODUCT (Admin Only)
-app.get('/deleteProduct/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
+// DELETE candy (Admin Only)
+app.get('/deletecandy/:id', checkAuth, checkAdmin, (req, res) => { const candyId = req.params.id;
 
-// Step 1: Delete the product from the database
-    const deleteQuery = 'DELETE FROM products WHERE candyId = ?';
+// Step 1: Delete the candy from the database
+    const deleteQuery = 'DELETE FROM candys WHERE candyId = ?';
     db.query(deleteQuery, [candyId], (err, result) => {
         if (err) {
             console.error("Error deleting candy from DB:", err);
