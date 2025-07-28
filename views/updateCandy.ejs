@@ -40,7 +40,7 @@
         
         <div class="mb-3">
           <label for="name" class="form-label">Product Name</label>
-          <input type="text" class="form-control" id="name" name="name" value="<%= product.candyName %>" required>
+          <input type="text" class="form-control" id="name" name="candyName" value="<%= product.candyName %>" required>
         </div>
 
         <div class="mb-3">
@@ -66,12 +66,12 @@
 
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
-          <textarea type="text" class="form-control" id="description" name="description" rows="3" value="<%= product.description %>" required></textarea>
+          <textarea class="form-control" id="description" name="description" rows="3" required><%= product.description %></textarea>
         </div>
 
         <div class="mb-3">
           <label for="ingredients" class="form-label">Ingredients</label>
-          <textarea type="text" class="form-control" id="ingredients" name="ingredients" rows="3" value="<%= product.ingredients %>" required></textarea>
+          <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required><%= product.ingredients %></textarea>
         </div>
 
         <div class="mb-3">
