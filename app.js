@@ -324,9 +324,9 @@ app.post('/updateProductCandy/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image =? WHERE candyId = ?';
+    const sql = 'UPDATE products SET candyName = ? , quantity = ?, price = ?, image = ?, description = ?, ingredients = ?, allergens = ?, storageInstructions = ?, madeIn = ? WHERE candyId = ?';
     // Insert the new product into the database
-    db.query(sql, [candyName, quantity, price, image, candyId], (error, results) => {
+    db.query(sql, [candyName, quantity, price, image, description, ingredients, allergens, storageInstructions, madeIn, candyId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating candy:", error);
